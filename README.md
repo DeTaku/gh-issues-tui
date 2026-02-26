@@ -1,7 +1,9 @@
 # gh-issues-tui
 
-A minimal, fast, keyboard-driven terminal UI for GitHub Issues.  
-Backed by the `gh` CLI — no OAuth code, no secret management.
+> A minimal, fast, keyboard-driven terminal UI for GitHub Issues.  
+> Backed by the `gh` CLI — no OAuth code, no secret management.
+
+**MIT License** · Copyright © 2026 [DeTaku](https://github.com/DeTaku) — [Syncraflow](https://syncraflow.com)
 
 ```
 dion-issues --repo OWNER/REPO
