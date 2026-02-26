@@ -1,0 +1,125 @@
+# =============================================================================
+# gh-issues-tui — .gitignore
+# Public repository: nothing sensitive, personal, or machine-specific committed
+# =============================================================================
+
+# ── Python bytecode & caches ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# ── Build artifacts ───────────────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+wheels/
+*.whl
+*.tar.gz
+
+# ── Test & coverage ───────────────────────────────────────────────────────────
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+junit*.xml
+nosetests.xml
+
+# ── Type checkers & linters ───────────────────────────────────────────────────
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+pyrightconfig.json
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env/
+.python-version
+
+# ── Environment / secrets — NEVER commit credentials ─────────────────────────
+.env
+.env.*
+*.env
+secrets.py
+secrets.json
+secrets.toml
+.secrets/
+credentials
+credentials.json
+
+# ── Runtime data dirs (if overridden to be inside this repo) ─────────────────
+# Default locations are ~/.cache/ and ~/.local/share/ (outside repo).
+# Listed here in case DION_ISSUES_CACHE_DIR / DION_ISSUES_DATA_DIR is set
+# to a path inside the project directory.
+cache/
+.cache/
+data/
+.data/
+drafts.json
+
+# ── Editor & IDE ─────────────────────────────────────────────────────────────
+# VS Code — workspace settings safe to commit, but not personal/launch configs
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/*.code-workspace
+.history/
+# JetBrains (PyCharm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+# Vim / Neovim
+*.swp
+*.swo
+*~
+Session.vim
+# Emacs
+\#*\#
+.\#*
+# Sublime Text
+*.sublime-workspace
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# ── Windows ───────────────────────────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ── Linux ─────────────────────────────────────────────────────────────────────
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ── Jupyter (not used here, but common in Python repos) ──────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Packaging / distribution ─────────────────────────────────────────────────
+pip-log.txt
+pip-delete-this-directory.txt
