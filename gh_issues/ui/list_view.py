@@ -47,7 +47,7 @@ def run_list_view(stdscr: "curses.window", state: AppState) -> tuple:
             curses.update_lines_cols()
             continue
 
-        if state.search and state.search != "/":
+        if state.search:
             # We're in search mode — handle text input.
             action = _handle_search_key(key, state)
             if action:

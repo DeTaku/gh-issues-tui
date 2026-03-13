@@ -8,6 +8,7 @@ Keys:
     Enter            open item detail (if issue/PR in a watched repo)
     m                mark selected notification as read
     M                mark all visible as read
+    u                toggle unread-only / show-all
     r                force refresh
     /                search / filter (ESC to clear)
     q                quit
@@ -73,13 +74,14 @@ def run_notif_view(
     cursor = 0
     scroll_top = 0
     search = ""
+    show_all = all_notifs  # can be toggled at runtime with 'u'
 
     stdscr.timeout(_POLL_MS)
 
     while True:
         now = time.monotonic()
         if (now - last_fetch) >= refresh_interval:
-            items = _fetch_notifs(state.cache, all_notifs, refresh_interval)
+            items = _fetch_notifs(state.cache, show_all, refresh_interval)
             last_fetch = time.monotonic()
 
         h, w = stdscr.getmaxyx()
@@ -88,13 +90,13 @@ def run_notif_view(
             repos=filter_repos or None,
             kind=filter_kind or None,
             reason=filter_reason or None,
-            search=search or None,
-            unread_only=not all_notifs,
+            search=search.lstrip("/") or None,
+            unread_only=not show_all,
         )
         cursor = max(0, min(cursor, len(visible) - 1))
         next_in = max(0, int(refresh_interval - (time.monotonic() - last_fetch)))
         _draw_notif(stdscr, visible, cursor, scroll_top, search,
-                    all_notifs, next_in, h, w)
+                    show_all, next_in, h, w)
         scroll_top = _clamp_scroll(cursor, scroll_top, h - 2)
 
         key = stdscr.getch()
@@ -106,7 +108,7 @@ def run_notif_view(
         if key == -1:
             continue
 
-        if search and search != "/":
+        if search:
             result = _handle_search_key(key, search)
             if result == "clear":
                 search = ""
@@ -137,6 +139,10 @@ def run_notif_view(
                     _mark_read(state.cache, item)
                 read_ids = {i.thread_id for i in visible}
                 items = [i for i in items if i.thread_id not in read_ids]
+                cursor = 0
+            case "toggle_all":
+                show_all = not show_all
+                last_fetch = 0.0  # force re-fetch with new all_notifs value
                 cursor = 0
             case "open":
                 item = action[1]
@@ -193,7 +199,7 @@ def _draw_notif(
     cursor: int,
     scroll_top: int,
     search: str,
-    all_notifs: bool,
+    show_all: bool,
     next_in: int,
     h: int,
     w: int,
@@ -201,10 +207,10 @@ def _draw_notif(
     stdscr.erase()
     content_rows = h - 2
 
-    scope = "all" if all_notifs else "unread"
+    scope = "all" if show_all else "unread"
     title = f" NOTIFICATIONS  ({scope})"
-    if search:
-        title += f"  /{search}"
+    if search and search != "/":
+        title += f"  /{search.lstrip('/')}"   
     _draw_hline(stdscr, 0, title, w, curses.color_pair(CP_STATUS) | curses.A_BOLD)
 
     unread_count = sum(1 for i in visible if i.unread)
@@ -225,7 +231,7 @@ def _draw_notif(
     pos = f"{cursor + 1}/{total}" if total else "0/0"
     status = (
         f" {unread_count} unread  {pos}  refresh in {next_in}s"
-        f"   j/k:move  Enter:open  m:read  M:read-all  r:refresh  /:filter  q:quit"
+        f"   j/k:move  Enter:open  m:read  M:read-all  u:toggle-all  /:filter  q:quit"
     )
     _draw_hline(stdscr, h - 1, status, w, curses.color_pair(CP_STATUS))
     stdscr.refresh()
@@ -298,6 +304,8 @@ def _handle_normal_key(
         return ("mark_one",)
     if key == ord("M"):
         return ("mark_all",)
+    if key == ord("u"):
+        return ("toggle_all",)
     if key == ord("r"):
         return ("refresh",)
     if key == ord("/"):
